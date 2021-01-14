@@ -7,62 +7,44 @@ using System.Net;
 
 namespace ParsingLib
 {
-    public class Parsing
+    public class Site
     {
-        public List<Content> Content;
-        public void LoadContent(ILoadContent content)
+        public static HtmlDocument LoadDocument(string url)
         {
-            Content = content.LoadContent();
+            var web = new HtmlWeb();
+            return web.Load(url);
         }
-    }
-    public interface ILoadContent
-    {
-        List<Content> LoadContent();
-    }
-    public class BaseLoad : ILoadContent
-    {
-        public string URL;
-        public BaseLoad(string url)
+        public static string LoadJsonString(string url)
         {
-            URL = url;
-        }
-        virtual public List<Content> LoadContent()
-        {
-            return null;
-        }
-    }
-    public class BaseLoadJson : BaseLoad
-    {
-        public BaseLoadJson(string url) : base(url) { }
-        public string GetJsonString(string URL)
-        {
-            WebRequest request = WebRequest.Create(URL);
+            WebRequest request = WebRequest.Create(url);
             WebResponse response = request.GetResponse();
             string json = "";
             using (Stream stream = response.GetResponseStream())
             {
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    json = reader.ReadToEnd();
-                }
+                using StreamReader reader = new StreamReader(stream);
+                json = reader.ReadToEnd();
             }
             response.Close();
             return json;
         }
-    }
-    public class BaseLoadDoc : BaseLoad
-    {
-        public BaseLoadDoc(string url) : base(url) { }
-        public HtmlDocument LoadDoc(string href)
+        public static string LoadImage(string href, string foldetPath)
         {
-            var web = new HtmlWeb();
-            return web.Load(href);
+            string path;
+            using (WebClient client = new WebClient())
+            {
+                path = string.Format(@"{1}{0}.png", foldetPath, Guid.NewGuid());
+                client.DownloadFile(new Uri("https://www.partslink24.com/" + href), path);
+            }
+            return path;
         }
     }
-    public class Content
+    public class  Formatter
     {
-        public string Caption { get; set; }
-        public string JsonUrl { get; set; }
-        public string Url { get; set; }
+        public static int? ToNullableInt(string s)
+        {
+            int i;
+            if (int.TryParse(s, out i)) return i;
+            return null;
+        }
     }
 }

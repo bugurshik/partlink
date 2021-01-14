@@ -27,4 +27,15 @@ namespace ConsoleApp1
     {
         public static ModelYears FromJson(string json) => JsonConvert.DeserializeObject<ModelYears>(json);
     }
+    public class Json<T>
+    {
+        public static T FromJson(string json) => JsonConvert.DeserializeObject<T>(json);
+    }
+    public class Test
+    {
+        void test()
+        {
+            Json<ModelYears>.FromJson("");
+        }
+    }
 }
