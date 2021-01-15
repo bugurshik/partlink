@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using ParsingLib;
 
-namespace ConsoleApp1
+namespace ConsoleParsingPartsLinks24
 {
     public partial class ModelYears
     {

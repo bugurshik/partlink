@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-namespace Partslink24ModelsLib
+namespace Partslink24Models
 {
     public class ModelConfig
     {
+        [JsonIgnore]
         public int Id { get; set; }
         public string Model { get; set; }
+        public string FamilyKey { get; set; }
         public string Year { get; set; }
         public string Restrict1 { get; set; }
         public string Restrict2 { get; set; }
@@ -43,17 +46,5 @@ namespace Partslink24ModelsLib
         // relationship
         public int GroupConfigId { get; set; }
         public GroupConfig GroupConfig { get; set; } = new GroupConfig();
-    }
-    public class Detail
-    {
-        public string Position { get; set; }
-        public string PartNo { get; set; }
-        public string OriginalPartno { get; set; }
-        public string Description { get; set; }
-        public string ModelDescription { get; set; }
-        public int? Quantity { get; set; }
-        public string Input { get; set; }
-        public string DeploymentTime { get; set; }
-        public string NotAvailable { get; set; }
     }
 }
