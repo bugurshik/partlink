@@ -208,11 +208,6 @@ namespace ConsoleParsingPartsLinks24
                 string imagePath = Site.LoadImage(imageUrl, @"C:\Users\Proger2\Desktop\");
             }
         }
-        public class Answer
-        {
-            public string ModelName;
-            public string URL;
-        }
         public static class Models
         {
             public static List<ModelConfig> GetAll(string url)
@@ -292,10 +287,8 @@ namespace ConsoleParsingPartsLinks24
                 GroupConfig groupConfig = new GroupConfig
                 {
                     ModelConfig = config,
-
                 };
-
-                return groupConfig;
+                return answers;
             }
         }
     }
