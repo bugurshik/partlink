@@ -5,7 +5,7 @@ using ParsingLib;
 
 namespace ConsoleApp1
 {
-    public partial class ModelYears
+    public partial class Serialize1
     {
         [JsonProperty("tcLinks")]
         public List<Content> ContentList { get; set; }
@@ -23,19 +23,12 @@ namespace ConsoleApp1
         public string Url { get; set; }
     }
 
-    public partial class ModelYears
+    public partial class Serialize1
     {
-        public static ModelYears FromJson(string json) => JsonConvert.DeserializeObject<ModelYears>(json);
+        public static Serialize1 FromJson(string json) => JsonConvert.DeserializeObject<Serialize1>(json);
     }
     public class Json<T>
     {
         public static T FromJson(string json) => JsonConvert.DeserializeObject<T>(json);
-    }
-    public class Test
-    {
-        void test()
-        {
-            Json<ModelYears>.FromJson("");
-        }
     }
 }

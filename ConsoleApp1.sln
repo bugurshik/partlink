@@ -5,9 +5,7 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{3588D9AC-BE20-47E2-9C1D-CF361EE66AD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsingLib", "WebRequest\ParsingLib.csproj", "{F27522A7-3D04-4C28-B90A-A32D3FFA906F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Partslink24ModelsLib", "Partslink24ModelsLib\Partslink24ModelsLib.csproj", "{CFE4670E-C1C1-4C2F-8D8A-782C0F6CED1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParsingLib", "WebRequest\ParsingLib.csproj", "{F27522A7-3D04-4C28-B90A-A32D3FFA906F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{F27522A7-3D04-4C28-B90A-A32D3FFA906F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F27522A7-3D04-4C28-B90A-A32D3FFA906F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F27522A7-3D04-4C28-B90A-A32D3FFA906F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CFE4670E-C1C1-4C2F-8D8A-782C0F6CED1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CFE4670E-C1C1-4C2F-8D8A-782C0F6CED1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CFE4670E-C1C1-4C2F-8D8A-782C0F6CED1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CFE4670E-C1C1-4C2F-8D8A-782C0F6CED1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
