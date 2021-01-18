@@ -8,58 +8,38 @@ using System.Text.RegularExpressions;
 
 namespace ParsingLib
 {
-    public class Parsing
-    {
-        public List<Content> Content;
-        public void LoadContent(ILoadContent content)
-        {
-            Content = content.LoadContent();
-        }
-    }
-    public interface ILoadContent
-    {
-        List<Content> LoadContent();
-    }
-    public class BaseLoad : ILoadContent
+    public abstract class Parsing<T, U>
     {
         public string URL;
-        public BaseLoad(string url)
+        public T ParentConfig;
+        public U ChildConfig;
+        public List<U> Values { get; set; } = new List<U>();
+        public Parsing(T config, string url)
         {
             URL = url;
+            ParentConfig = config;
         }
-        virtual public List<Content> LoadContent()
-        {
-            return null;
-        }
+        public abstract List<U> GetAll();
+        
     }
-    public class BaseLoadJson : BaseLoad
+    public abstract class ParsingDoc<T, U> : Parsing<T, U>
     {
-        public BaseLoadJson(string url) : base(url) { }
-        public string GetJsonString(string URL)
+        public HtmlDocument Doc;
+        public ParsingDoc(T config, string url) : base(config, url)
         {
-            WebRequest request = WebRequest.Create(URL);
-            WebResponse response = request.GetResponse();
-            string json = "";
-            using (Stream stream = response.GetResponseStream())
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    json = reader.ReadToEnd();
-                }
-            }
-            response.Close();
-            return json;
+            Doc = Site.LoadDocument(URL);
         }
     }
-    public class BaseLoadDoc : BaseLoad
+    public abstract class ParsingJson<T, U> : Parsing<T, U>
     {
-        public BaseLoadDoc(string url) : base(url) { }
-        public HtmlDocument LoadDoc(string href)
+        public string Json;
+        public ParsingJson(T config, string url) : base(config, url)
         {
-            var web = new HtmlWeb();
-            return web.Load(href);
+            Json = Site.LoadJsonString(URL);
         }
     }
+    
+
     public class Content
     {
         public string Caption { get; set; }
@@ -77,8 +57,7 @@ namespace ParsingLib
         }
         public static string LoadJsonString(string url)
         {
-            WebRequest request = WebRequest.Create(url);
-            WebResponse response = request.GetResponse();
+            WebResponse response = WebRequest.Create(url).GetResponse();
             string json = "";
             using (Stream stream = response.GetResponseStream())
             {

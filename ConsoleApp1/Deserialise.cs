@@ -7,13 +7,14 @@ using ParsingLib;
 
 namespace ConsoleParsingPartsLinks24
 {
-    public partial class ModelYears
+    public partial class Answers
     {
         [JsonProperty("tcLinks")]
-        public List<Content> ContentList { get; set; }
+        public List<Answer> ContentList { get; set; }
+        public static Answers FromJson(string json) => JsonConvert.DeserializeObject<Answers>(json);
     }
 
-    public class Content
+    public class Answer
     {
         [JsonProperty("caption")]
         public string Caption { get; set; }
@@ -25,17 +26,12 @@ namespace ConsoleParsingPartsLinks24
         public string Url { get; set; }
     }
 
-    public partial class ModelYearsSerialize
-    {
-        public static ModelYears FromJson(string json) => JsonConvert.DeserializeObject<ModelYears>(json);
-    }
 
-
-
-    public partial class DetailConfig
+    public partial class DetailAnswers
     {
         [JsonProperty("positions")]
         public List<Position> Positions { get; set; }
+        public static DetailAnswers FromJson(string json) => JsonConvert.DeserializeObject<DetailAnswers>(json);
     }
 
     public partial class Position
@@ -56,8 +52,7 @@ namespace ConsoleParsingPartsLinks24
         public List<string> Remark { get; set; }
 
         [JsonProperty("hotspotIds")]
-        [JsonConverter(typeof(DecodeArrayConverter))]
-        public List<long> HotspotIds { get; set; }
+        public List<int> HotspotIds { get; set; }
 
         [JsonProperty("vehicleDataAvailable")]
         public bool VehicleDataAvailable { get; set; }
@@ -95,90 +90,6 @@ namespace ConsoleParsingPartsLinks24
         [JsonProperty("deploymentTime")]
         public string DeploymentTime { get; set; }
     }
-
-    public partial class DetailConfig
-    {
-        public static DetailConfig FromJson(string json) => JsonConvert.DeserializeObject<DetailConfig>(json, Converter.Settings);
-    }
-    internal static class Converter
-    {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
-        {
-            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-            DateParseHandling = DateParseHandling.None,
-            Converters =
-            {
-                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
-        };
-    }
-
-    internal class DecodeArrayConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(List<long>);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            reader.Read();
-            var value = new List<long>();
-            while (reader.TokenType != JsonToken.EndArray)
-            {
-                var converter = ParseStringConverter.Singleton;
-                var arrayItem = (long)converter.ReadJson(reader, typeof(long), null, serializer);
-                value.Add(arrayItem);
-                reader.Read();
-            }
-            return value;
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            var value = (List<long>)untypedValue;
-            writer.WriteStartArray();
-            foreach (var arrayItem in value)
-            {
-                var converter = ParseStringConverter.Singleton;
-                converter.WriteJson(writer, arrayItem, serializer);
-            }
-            writer.WriteEndArray();
-            return;
-        }
-
-        public static readonly DecodeArrayConverter Singleton = new DecodeArrayConverter();
-    }
-
-    internal class ParseStringConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(long) || t == typeof(long?);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null) return null;
-            var value = serializer.Deserialize<string>(reader);
-            long l;
-            if (Int64.TryParse(value, out l))
-            {
-                return l;
-            }
-            throw new Exception("Cannot unmarshal type long");
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            if (untypedValue == null)
-            {
-                serializer.Serialize(writer, null);
-                return;
-            }
-            var value = (long)untypedValue;
-            serializer.Serialize(writer, value.ToString());
-            return;
-        }
-
-        public static readonly ParseStringConverter Singleton = new ParseStringConverter();
-    }
-
-
 
     // image 
     public partial class ImageParam
@@ -220,12 +131,10 @@ namespace ConsoleParsingPartsLinks24
     public partial class Hotspot
     {
         [JsonProperty("hsKey")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long HsKey { get; set; }
+        public string HsKey { get; set; }
 
         [JsonProperty("hsPartNo")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long HsPartNo { get; set; }
+        public string HsPartNo { get; set; }
 
         [JsonProperty("hsGroup")]
         public List<object> HsGroup { get; set; }

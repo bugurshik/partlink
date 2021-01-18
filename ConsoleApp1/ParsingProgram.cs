@@ -1,13 +1,9 @@
 ﻿using HtmlAgilityPack;
-using System;
-using System.IO;
-using System.Net;
-using Newtonsoft.Json;
 using ParsingLib;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Partslink24Models;
-using System.Linq;
+using System;
 
 namespace ConsoleParsingPartsLinks24
 {
@@ -25,32 +21,13 @@ namespace ConsoleParsingPartsLinks24
             ModelConfig baseModelConf = new ModelConfig();
             parsingM(baseModelConf, href);
             */
-
-            //var t = GetSum(-2, 3);
-            Console.WriteLine();
-
-            int GetSum(int a, int b)
-            {
-                if(a < 0)
-                {
-                    var r = Enumerable.Range(a, b - a+1);
-                    var t = Enumerable.Range(a, b - a).Sum();
-                    return t;
-                }
-                else
-                {
-                    return Enumerable.Range(a, a - b).Sum();
-                }
-            } 
-
-
             // handle parsing 
-            ModelConfig baseModelConf = new ModelConfig { Model = "Audi A8", Year = "1998", Restrict1 = "Передний привод"};
+            ModelConfig baseModelConf = new ModelConfig { Model = "Audi A8", Year = "1998", Restrict1 = "Передний привод" };
             GroupConfig baseGroupConig = new GroupConfig { GroupName = "Дигатель", ModelConfig = baseModelConf };
-            
+
             parsingDetails(baseGroupConig, "https://www.partslink24.com/vwag/audi_parts/image-board.action?catalogMarket=RDW&episType=152&familyKey=91155&illustrationId=7564255&lang=ru&localMarketOnly=true&maingroup=1&modelYear=1998&ordinalNumber=2&partDetailsMarket=RDW&restriction1=92362&startup=false&mode=K00U0RUXX&upds=1381");
 
-            void parsingM( ModelConfig config, string url)
+            void parsingM(ModelConfig config, string url)
             {
                 var path = Site.GetUriPath(url);
                 HtmlDocument htmlDoc = Site.LoadDocument(url);
@@ -73,8 +50,8 @@ namespace ConsoleParsingPartsLinks24
             {
                 var path = Site.GetUriPath(href);
                 var json = Site.LoadJsonString(href);
-                var years = ModelYearsSerialize.FromJson(json);
-                foreach(var year in years.ContentList)
+                var years = Answers.FromJson(json);
+                foreach (var year in years.ContentList)
                 {
                     config.Year = year.Caption;
 
@@ -88,8 +65,8 @@ namespace ConsoleParsingPartsLinks24
             {
                 var path = Site.GetUriPath(href);
                 var json = Site.LoadJsonString(href);
-                var restricts = ModelYearsSerialize.FromJson(json);
-                foreach(var restrict in restricts.ContentList)
+                var restricts = Answers.FromJson(json);
+                foreach (var restrict in restricts.ContentList)
                 {
                     config.Restrict1 = restrict.Caption.Trim();
 
@@ -103,7 +80,7 @@ namespace ConsoleParsingPartsLinks24
             {
                 var path = Site.GetUriPath(href);
                 var json = Site.LoadJsonString(href);
-                var restricts = ModelYearsSerialize.FromJson(json);
+                var restricts = Answers.FromJson(json);
                 foreach (var restrict in restricts.ContentList)
                 {
                     config.Restrict1 = restrict.Caption.Trim();
@@ -117,19 +94,19 @@ namespace ConsoleParsingPartsLinks24
             void parsingR3(ModelConfig config, string href)
             {
                 var json = Site.LoadJsonString(href);
-                var restricts = ModelYearsSerialize.FromJson(json);
+                var restricts = Answers.FromJson(json);
                 foreach (var restrict in restricts.ContentList)
                 {
                     config.Restrict3 = restrict.Caption.Trim();
 
-                    
+
                     if (restrict.JsonUrl != null)
                     {
                         var relUrl = restrict.JsonUrl;
                         var path = Site.GetUriPath(href) + relUrl;
                         parsingR3(config, path);
                     }
-                       
+
                     else
                     {
                         var relUrl = restrict.Url;
@@ -142,7 +119,7 @@ namespace ConsoleParsingPartsLinks24
             void parsingGroup(ModelConfig modelConfig, string href)
             {
                 HtmlDocument htmlDoc = Site.LoadDocument(href);
-                
+
                 var models = htmlDoc.GetElementbyId("nav-maingroup-container").SelectNodes("//tbody/tr");
                 foreach (var model in models)
                 {
@@ -154,7 +131,7 @@ namespace ConsoleParsingPartsLinks24
                         {
                             GroupName = model.InnerText
                         };
-                        modelConfig.Groups.Add(newGroupConfig);
+                        //modelConfig.GroupConfig = (newGroupConfig);
                         newGroupConfig.ModelConfig = modelConfig;
 
                         string url = model.Attributes["url"].Value.Trim();
@@ -190,7 +167,7 @@ namespace ConsoleParsingPartsLinks24
 
                 string tabjePattern = @",(""positions"":(.*?)),""lang";
                 string tabjeJson = "{" + Regex.Match(htmlDoc, tabjePattern, RegexOptions.Singleline).Groups[1].Value + "}";
-                DetailConfig test = DetailConfig.FromJson(tabjeJson);
+                DetailAnswers test = DetailAnswers.FromJson(tabjeJson);
 
                 string imagePattern = @"""imageViewerParamsUrl"":""(.*?)""";
                 string imageJsonUrl = "https://www.partslink24.com/vwag/audi_parts/" + Regex.Match(htmlDoc, imagePattern).Groups[1].Value.Replace("\\u0026", "&");
@@ -199,8 +176,8 @@ namespace ConsoleParsingPartsLinks24
                 string imageRequestInfo = "&request=GetImageInfo&ticket=";
                 string jsonImageInfoUrl = domain + imageParam.Pathparams.Url + imageRequestInfo + imageParam.Pathparams.Ticket + "&cv=1";
                 ImageInfo imageInfo = ImageInfo.FromJson(Site.LoadJsonString(jsonImageInfoUrl));
-                
-                string ImageSetting = string.Format(@"&rnd=2771&request=GetImage&format={0}&bbox=0%2C0%2C1248%2C1413&width={1}&height={2}&scalefac=1&ticket=", 
+
+                string ImageSetting = string.Format(@"&rnd=2771&request=GetImage&format={0}&bbox=0%2C0%2C1248%2C1413&width={1}&height={2}&scalefac=1&ticket=",
                     imageInfo.ImageFormat, imageInfo.ImageWidth, imageInfo.ImageHeight);
 
                 //string ImageSetting = "&rnd=2771&request=GetImage&format=image%2Fpng&bbox=0%2C0%2C1248%2C1413&width=500&height=302&scalefac=1&ticket=";
@@ -208,22 +185,19 @@ namespace ConsoleParsingPartsLinks24
                 string imagePath = Site.LoadImage(imageUrl, @"C:\Users\Proger2\Desktop\");
             }
         }
-        public static class Models
+
+        public class ParsingModels : ParsingDoc<ModelConfig, ModelConfig>
         {
-            public static List<ModelConfig> GetAll(string url)
+            public ParsingModels(ModelConfig config, string url) : base(config, url) { }
+            public override List<ModelConfig> GetAll()
             {
-                HtmlDocument htmlDoc = Site.LoadDocument(url);
-                List<ModelConfig> answers = new List<ModelConfig>();
-                var models = htmlDoc.GetElementbyId("nav-model-container").SelectNodes("//tbody/tr");
+                var models = Doc.GetElementbyId("nav-model-container").SelectNodes("//tbody/tr");
 
                 foreach (var model in models)
                 {
-                    if (model.HasClass("tc-section-row"))
-                        continue;
-
-                    if (model.Attributes["url"] != null && model.Attributes["jsonurl"] != null)
+                    if (model.Attributes["url"] != null && model.Attributes["jsonurl"] != null && !model.HasClass("tc-section-row"))
                     {
-                        answers.Add(
+                        Values.Add(
                         new ModelConfig
                         {
                             Model = model.InnerText,
@@ -231,64 +205,141 @@ namespace ConsoleParsingPartsLinks24
                         });
                     }
                 }
-                return answers;
+                return Values;
             }
         }
-        public static class Years
+        public class Years : ParsingJson<ModelConfig, ModelConfig>
         {
-            public static List<ModelConfig> GetAll(ModelConfig config, string url)
+            public Years(ModelConfig config, string url) : base(config, url) { }
+            public override List<ModelConfig> GetAll()
             {
-                var json = Site.LoadJsonString(url);
-                var years = ModelYearsSerialize.FromJson(json);
-                
-                List<ModelConfig> answers = new List<ModelConfig>();
+                var years = Answers.FromJson(Json);
 
                 foreach (var year in years.ContentList)
                 {
-                    ModelConfig newConf = new ModelConfig
+                    ModelConfig newYearConfig = new ModelConfig
                     {
-                        Model = config.Model,
-                        FamilyKey = config.FamilyKey,
+                        Model = ParentConfig.Model,
+                        FamilyKey = ParentConfig.FamilyKey,
                         Year = year.Caption
                     };
-                    answers.Add(newConf);
+                    Values.Add(newYearConfig);
                 }
-                return answers;
+                return Values;
             }
         }
-        public static class RestrictI
+        public class RestrictI : ParsingJson<ModelConfig, ModelConfig>
         {
-            public static List<ModelConfig> GetAll(ModelConfig config, string url)
+            public RestrictI(ModelConfig config, string url) : base(config, url) { }
+            public override List<ModelConfig> GetAll()
             {
-                var json = Site.LoadJsonString(url);
-                var restricts = ModelYearsSerialize.FromJson(json);
-
-                List<ModelConfig> answers = new List<ModelConfig>();
+                var restricts = Answers.FromJson(Json);
 
                 foreach (var restrict in restricts.ContentList)
                 {
-                    ModelConfig newConf = new ModelConfig
+                    ModelConfig newModelConfig = new ModelConfig
                     {
-                        Model = config.Model,
-                        FamilyKey = config.FamilyKey,
-                        Year = config.Year,
-                        Restrict1 = restrict.Caption.Trim()
+                        Model = ParentConfig.Model,
+                        FamilyKey = ParentConfig.FamilyKey,
+                        Year = ParentConfig.Year,
+                        Restrict1 = restrict.Caption.Trim(),
+                        RestrictKey = Regex.Match(restrict.Url, @"restriction1=(.*?)&").Groups[1].Value                        
                     };
-                    answers.Add(newConf);
+                    Values.Add(newModelConfig);
                 }
-                return answers;
+                return Values;
             }
         }
-        public static class Groups
+        public class Groups : ParsingDoc<ModelConfig, GroupConfig>
         {
-            public static List<GroupConfig> GetAll(ModelConfig config, string url) 
+            public Groups(ModelConfig config, string url) : base(config, url) { }
+            public override List<GroupConfig> GetAll() 
             {
-                List<GroupConfig> answers = new List<GroupConfig>();
-                GroupConfig groupConfig = new GroupConfig
+                var groups = Doc.GetElementbyId("nav-maingroup-container").SelectNodes("//tbody/tr");
+
+                foreach (var group in groups)
                 {
-                    ModelConfig = config,
-                };
-                return answers;
+                    if (group.Attributes["url"] != null && group.Attributes["jsonurl"] != null && !group.HasClass("tc-section-row"))
+                    {
+                        GroupConfig newGroupConfig = new GroupConfig
+                        {
+                            ModelConfig = ParentConfig,
+                            GroupName = group.InnerText,
+                            MainGroup = Regex.Match(group.Attributes["url"].Value, @"maingroup=(.*?)&").Groups[1].Value
+                        };
+                        Values.Add(newGroupConfig);
+                    }
+                }
+                return Values;
+            }
+        }
+        public class Part : ParsingDoc<GroupConfig, GroupConfig>
+        {
+            public Part(GroupConfig config, string url) : base(config, url) { }
+            public override List<GroupConfig> GetAll()
+            {
+                //https://www.partslink24.com/vwag/audi_parts/group.action?catalogMarket=RDW&episType=152&lang=ru&localMarketOnly=true&ordinalNumber=2&partDetailsMarket=RDW&startup=false&mode=K00U0DEXX&upds=1381&familyKey=91155&modelYear=1998&maingroup=1&restriction1=92362
+                //https://www.partslink24.com/vwag/audi_parts/group.action?catalogMarket=RDW&episType=152&lang=ru&localMarketOnly=true&ordinalNumber=2&partDetailsMarket=RDW&startup=false&mode=K00U0RUXX&upds=1381&familyKey=91155&modelYear=&maingroup=1998&restriction1=92362
+                var parts = Doc.GetElementbyId("nav-groupIllustration-table").SelectNodes("tbody/tr");
+                foreach (var part in parts)
+                {
+                    var cell = part.SelectNodes("td");
+                    GroupConfig newGroupConfig = new GroupConfig
+                    {
+                        ModelConfig = ParentConfig.ModelConfig,
+                        GroupName = ParentConfig.GroupName,
+                        MainGroup = ParentConfig.MainGroup,
+                        GLGR = cell[0].InnerText,
+                        Ilustration = cell[1].InnerText,
+                        IlustrationId = Regex.Match(part.Attributes["url"].Value, @"illustrationId=(.*?)&").Groups[1].Value,
+                        Name = cell[2].InnerText,
+                        Notice = cell[3].InnerText == "&nbsp;" ? null : cell[3].InnerText,
+                        Inputs = cell[4].InnerText == "&nbsp;" ? null : cell[4].InnerText,
+                    };
+                    Values.Add(newGroupConfig);
+                }
+                return Values;
+            }
+        }
+        public class Detail : ParsingDoc<GroupConfig, DetailConfing>
+        {
+            public Detail(GroupConfig config, string url) : base(config, url) { }
+            public override List<DetailConfing> GetAll()
+            {
+                string domain = "https://www.partslink24.com/";
+                string path = "https://www.partslink24.com/vwag/audi_parts";
+                var html = Site.LoadDocument(URL).DocumentNode.InnerHtml;
+                //string ImageSetting = "&rnd=2771&request=GetImage&format=image%2Fpng&bbox=0%2C0%2C1248%2C1413&width=500&height=302&scalefac=1&ticket=";
+                string tabjePattern = @",(""positions"":(.*?)),""lang";
+                string tabjeJson = "{" + Regex.Match(html, tabjePattern, RegexOptions.Singleline).Groups[1].Value + "}";
+                DetailAnswers answers = DetailAnswers.FromJson(tabjeJson);
+
+                foreach(var ansver in answers)
+                {
+                    DetailConfing newDetailConfing = new DetailConfing
+                    {
+                        Image = Site.LoadImage(MakeImageUrl(), @"C:\Users\Proger2\Desktop\"),
+                    };
+
+                    Values.Add(newDetailConfing);
+                }
+
+                return Values;
+
+                string MakeImageUrl()
+                {
+                    string imagePattern = @"""imageViewerParamsUrl"":""(.*?)""";
+                    string imageJsonUrl = path + "/" + Regex.Match(html, imagePattern).Groups[1].Value.Replace("\\u0026", "&");
+                    ImageParam imageParam = ImageParam.FromJson(Site.LoadJsonString(imageJsonUrl));
+
+                    string jsonImageInfoUrl = domain + imageParam.Pathparams.Url + "&cv=1&request=GetImageInfo&ticket=" + imageParam.Pathparams.Ticket;
+                    ImageInfo imageInfo = ImageInfo.FromJson(Site.LoadJsonString(jsonImageInfoUrl));
+
+                    string ImageSetting = string.Format(@"&rnd=2771&request=GetImage&format={0}&cv=1&bbox=0%2C0%2C1248%2C1413&width={1}&height={2}&scalefac=1&ticket=",
+                        imageInfo.ImageFormat, imageInfo.ImageWidth, imageInfo.ImageHeight);
+
+                    return domain + imageParam.Pathparams.Url + ImageSetting + imageParam.Pathparams.Ticket.Trim();
+                }
             }
         }
     }
