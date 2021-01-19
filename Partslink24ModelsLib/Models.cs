@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Partslink24Models
+namespace PartslinkModels
 {
     public class ModelConfig
     {
         [JsonIgnore]
         public int Id { get; set; }
+
         public string Model { get; set; }
         public string FamilyKey { get; set; } // model key
         public string Year { get; set; } // year key
@@ -16,6 +17,11 @@ namespace Partslink24Models
         public string Restrict3 { get; set; }
         // relationship
         //public GroupConfig GroupConfig { get; set; } = new GroupConfig();
+    }
+    public class Model
+    {
+        public string FamilyKey { get; set; }
+        public string ModelName { get; set; }
     }
 
     public class GroupConfig

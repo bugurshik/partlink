@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Partslink24Models
+namespace PartslinkModels
 {
     public class Answers
     {

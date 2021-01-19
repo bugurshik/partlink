@@ -2,8 +2,7 @@
 using ParsingLib;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Partslink24Models;
-using System;
+using PartslinkModels;
 
 namespace ConsoleParsingPartsLinks24
 {
@@ -21,6 +20,13 @@ namespace ConsoleParsingPartsLinks24
             ModelConfig baseModelConf = new ModelConfig();
             parsingM(baseModelConf, href);
             */
+
+            ParsingResponce<ModelConfig> res = new ParsingResponce<ModelConfig>
+            {
+                pars = new ParsingYears(new ModelConfig(), "")
+            };
+
+
             // handle parsing 
             ModelConfig baseModelConf = new ModelConfig { Model = "Audi A8", Year = "1998", Restrict1 = "Передний привод" };
             GroupConfig baseGroupConig = new GroupConfig { GroupName = "Дигатель", ModelConfig = baseModelConf };
@@ -167,7 +173,7 @@ namespace ConsoleParsingPartsLinks24
 
                 string tabjePattern = @",(""positions"":(.*?)),""lang";
                 string tabjeJson = "{" + Regex.Match(htmlDoc, tabjePattern, RegexOptions.Singleline).Groups[1].Value + "}";
-                DetailConfing test = DetailConfigJson.FromJson(tabjeJson);
+                DetailConfing test = DetailConfing.FromJson(tabjeJson);
 
                 string imagePattern = @"""imageViewerParamsUrl"":""(.*?)""";
                 string imageJsonUrl = "https://www.partslink24.com/vwag/audi_parts/" + Regex.Match(htmlDoc, imagePattern).Groups[1].Value.Replace("\\u0026", "&");
@@ -185,11 +191,15 @@ namespace ConsoleParsingPartsLinks24
                 string imagePath = Site.LoadImage(imageUrl, @"C:\Users\Proger2\Desktop\");
             }
         }
-
+        class Test
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
         public class ParsingModels : ParsingDoc<ModelConfig, ModelConfig>
         {
             public ParsingModels(ModelConfig config, string url) : base(config, url) { }
-            public override List<ModelConfig> GetAll()
+            public override List<ModelConfig> GetAllModels()
             {
                 var models = Doc.GetElementbyId("nav-model-container").SelectNodes("//tbody/tr");
 
@@ -197,21 +207,25 @@ namespace ConsoleParsingPartsLinks24
                 {
                     if (model.Attributes["url"] != null && model.Attributes["jsonurl"] != null && !model.HasClass("tc-section-row"))
                     {
-                        Values.Add(
-                        new ModelConfig
+                        ModelConfig modelConfig = new ModelConfig
                         {
                             Model = model.InnerText,
                             FamilyKey = Regex.Match(model.Attributes["jsonurl"].Value, @"familyKey=(.*?)&").Groups[1].Value
+                        };
+                        Values.Add(
+                        new ModelConfig
+                        {
+
                         });
                     }
                 }
                 return Values;
             }
         }
-        public class Years : ParsingJson<ModelConfig, ModelConfig>
+        public class ParsingYears : ParsingJson<ModelConfig, ModelConfig>
         {
-            public Years(ModelConfig config, string url) : base(config, url) { }
-            public override List<ModelConfig> GetAll()
+            public ParsingYears(ModelConfig config, string url) : base(config, url) { }
+            public override List<ModelConfig> GetAllModels()
             {
                 var years = Answers.FromJson(Json);
 
@@ -228,10 +242,10 @@ namespace ConsoleParsingPartsLinks24
                 return Values;
             }
         }
-        public class RestrictI : ParsingJson<ModelConfig, ModelConfig>
+        public class ParsingRestrictI : ParsingJson<ModelConfig, ModelConfig>
         {
-            public RestrictI(ModelConfig config, string url) : base(config, url) { }
-            public override List<ModelConfig> GetAll()
+            public ParsingRestrictI(ModelConfig config, string url) : base(config, url) { }
+            public override List<ModelConfig> GetAllModels()
             {
                 var restricts = Answers.FromJson(Json);
 
@@ -250,10 +264,10 @@ namespace ConsoleParsingPartsLinks24
                 return Values;
             }
         }
-        public class Groups : ParsingDoc<ModelConfig, GroupConfig>
+        public class ParsingGroups : ParsingDoc<ModelConfig, GroupConfig>
         {
-            public Groups(ModelConfig config, string url) : base(config, url) { }
-            public override List<GroupConfig> GetAll() 
+            public ParsingGroups(ModelConfig config, string url) : base(config, url) { }
+            public override List<GroupConfig> GetAllModels() 
             {
                 var groups = Doc.GetElementbyId("nav-maingroup-container").SelectNodes("//tbody/tr");
 
@@ -273,11 +287,14 @@ namespace ConsoleParsingPartsLinks24
                 return Values;
             }
         }
-        public class Part : ParsingDoc<GroupConfig, GroupConfig>
+        public class ParsingPart : ParsingDoc<GroupConfig, GroupConfig>
         {
-            public Part(GroupConfig config, string url) : base(config, url) { }
-            public override List<GroupConfig> GetAll()
+            public ParsingPart(GroupConfig config, string url) : base(config, url) { }
+            public override List<GroupConfig> GetAllModels()
             {
+                if (Doc == null)
+                    return null;
+
                 var parts = Doc.GetElementbyId("nav-groupIllustration-table").SelectNodes("tbody/tr");
                 foreach (var part in parts)
                 {
@@ -299,17 +316,16 @@ namespace ConsoleParsingPartsLinks24
                 return Values;
             }
         }
-        public class Detail : ParsingDoc<GroupConfig, DetailConfing>
+        public class ParsingDetail : ParsingDoc<GroupConfig, DetailConfing>
         {
-            public Detail(GroupConfig config, string url) : base(config, url) { }
-            public override List<DetailConfing> GetAll()
+            public ParsingDetail(GroupConfig config, string url) : base(config, url) { }
+            public override List<DetailConfing> GetAllModels()
             {
                 string domain = "https://www.partslink24.com/";
-                string path = "https://www.partslink24.com/vwag/audi_parts";
+                string path = "https://www.partslink24.com/vwag/audi_parts/";
                 string html = Site.LoadDocument(URL).DocumentNode.InnerHtml;
-                //string ImageSetting = "&rnd=2771&request=GetImage&format=image%2Fpng&bbox=0%2C0%2C1248%2C1413&width=500&height=302&scalefac=1&ticket=";
 
-                DetailConfing newDetailConfig = DetailConfigJson.FromJson(getTableJson());
+                DetailConfing newDetailConfig = DetailConfing.FromJson(getTableJson());
 
                 newDetailConfig.ImageInfo = loadImageInfo();
                 newDetailConfig.GroupConfig = ParentConfig;

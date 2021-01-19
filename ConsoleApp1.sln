@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleParsingPartsLinks24"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParsingLib", "WebRequest\ParsingLib.csproj", "{F27522A7-3D04-4C28-B90A-A32D3FFA906F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Partslink24ModelsLib", "Partslink24ModelsLib\Partslink24ModelsLib.csproj", "{CFE4670E-C1C1-4C2F-8D8A-782C0F6CED1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartslinkModels", "Partslink24ModelsLib\PartslinkModels.csproj", "{CFE4670E-C1C1-4C2F-8D8A-782C0F6CED1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiPartsLink24", "WebApiPartsLink24\WebApiPartsLink24.csproj", "{A91C766E-1DC8-4F14-9683-37E9169DF85F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiPartsLink24", "WebApiPartsLink24\WebApiPartsLink24.csproj", "{A91C766E-1DC8-4F14-9683-37E9169DF85F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

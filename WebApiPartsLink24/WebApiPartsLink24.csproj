@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ConsoleApp1\ConsoleParsingPartsLinks24.csproj" />
-    <ProjectReference Include="..\Partslink24ModelsLib\Partslink24ModelsLib.csproj" />
+    <ProjectReference Include="..\Partslink24ModelsLib\PartslinkModels.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Partslink24ModelsLib\Partslink24ModelsLib.csproj" />
+    <ProjectReference Include="..\Partslink24ModelsLib\PartslinkModels.csproj" />
     <ProjectReference Include="..\WebRequest\ParsingLib.csproj" />
   </ItemGroup>
 
