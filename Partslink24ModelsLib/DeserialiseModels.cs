@@ -1,9 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Partslink24Models;
 
-namespace ConsoleParsingPartsLinks24
+namespace Partslink24Models
 {
     public class Answers
     {
@@ -11,7 +9,6 @@ namespace ConsoleParsingPartsLinks24
         public List<Answer> ContentList { get; set; }
         public static Answers FromJson(string json) => JsonConvert.DeserializeObject<Answers>(json);
     }
-
     public class Answer
     {
         [JsonProperty("caption")]
@@ -24,12 +21,7 @@ namespace ConsoleParsingPartsLinks24
         public string Url { get; set; }
     }
 
-    public class DetailConfigJson
-    {
-        public static DetailConfing FromJson(string json) => JsonConvert.DeserializeObject<DetailConfing>(json);
-    }
-
-    // image 
+    //image 
     public class ImageParam
     {
         [JsonProperty("pathparams")]
@@ -44,5 +36,11 @@ namespace ConsoleParsingPartsLinks24
 
         [JsonProperty("url")]
         public string Url { get; set; }
+    }
+
+    //partial
+    public partial class DetailConfing
+    {
+        public static DetailConfing FromJson(string json) => JsonConvert.DeserializeObject<DetailConfing>(json);
     }
 }
