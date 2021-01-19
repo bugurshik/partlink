@@ -39,13 +39,12 @@ namespace WebApiPartsLink24
             return Ok(newParsingRestrict1.GetAll());
         }
         [HttpPost("groups")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult GetGroups(ModelConfig config)
         {
             string action = "/group.action?";
             string constParams = "catalogMarket=RDW&episType=152&lang=ru&localMarketOnly=true&ordinalNumber=2&partDetailsMarket=RDW&startup=false&mode=K00U0DEXX&upds=1381";
             string groupsUrl = string.Format(path + action + constParams + "&familyKey={0}&modelYear={1}&restriction1={2}",
-                config.FamilyKey, config.Year, config.Restrict1);
+                               config.FamilyKey, config.Year, config.Restrict1);
             var newParsingGroups = new ParsingProgram.Groups(config, groupsUrl);
             return Ok(newParsingGroups.GetAll());
         }
@@ -53,11 +52,9 @@ namespace WebApiPartsLink24
         public ActionResult GetParts(GroupConfig config)
         {
             string action = "/group.action?";
-            // https://www.partslink24.com/vwag/audi_parts/image-board.action?catalogMarket=RDW&episType=152&familyKey=91155&illustrationId=7564716&lang=ru&localMarketOnly=true&maingroup=1&modelYear=1998&ordinalNumber=2&partDetailsMarket=RDW&restriction1=92362&startup=false&mode=K00U0DEXX&upds=1381
-            //https://www.partslink24.com/vwag/audi_parts/image-board.action?catalogMarket=RDW&episType=152&lang=rulocalMarketOnly=true&ordinalNumber=2&partDetailsMarket=RDW&startup=false&mode=K00U0DEXX&upds=1381&familyKey=91155&modelYear=1998&maingroup=1&restriction1=92362&illustrationId=7564255
             string constParams = "catalogMarket=RDW&episType=152&lang=ru&localMarketOnly=true&ordinalNumber=2&partDetailsMarket=RDW&startup=false&mode=K00U0RUXX&upds=1381";
             string partsUrl = string.Format(path + action + constParams + "&familyKey={0}&modelYear={1}&maingroup={2}&restriction1={3}",
-            config.ModelConfig.FamilyKey, config.ModelConfig.Year, config.MainGroup, config.ModelConfig.RestrictKey);
+                              config.ModelConfig.FamilyKey, config.ModelConfig.Year, config.MainGroup, config.ModelConfig.RestrictKey);
             var newParsingGroups = new ParsingProgram.Part(config, partsUrl);
             return Ok(newParsingGroups.GetAll());
         }
@@ -65,10 +62,9 @@ namespace WebApiPartsLink24
         public ActionResult GetDetails(GroupConfig config)
         {
             string action = "/image-board.action?";
-            // good               catalogMarket=RDW&episType=152&lang=ru&localMarketOnly=true&ordinalNumber=2&partDetailsMarket=RDW&startup=false&mode=K00U0DEXX&upds=1381&familyKey=91155&modelYear=1998&maingroup=1&restriction1=92362&illustrationId=7564716
             string constParams = "catalogMarket=RDW&episType=152&lang=ru&localMarketOnly=true&ordinalNumber=2&partDetailsMarket=RDW&startup=false&mode=K00U0DEXX&upds=1381";
             string detailUrl = string.Format(path + action + constParams + "&familyKey={0}&modelYear={1}&maingroup={2}&restriction1={3}&illustrationId={4}",
-            config.ModelConfig.FamilyKey, config.ModelConfig.Year, config.MainGroup, config.ModelConfig.RestrictKey, config.IlustrationId);
+                               config.ModelConfig.FamilyKey, config.ModelConfig.Year, config.MainGroup, config.ModelConfig.RestrictKey, config.IlustrationId);
             var newParsingGroups = new ParsingProgram.Detail(config, detailUrl);
             return Ok(newParsingGroups.GetAll());
         }

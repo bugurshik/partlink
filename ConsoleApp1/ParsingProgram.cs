@@ -167,7 +167,7 @@ namespace ConsoleParsingPartsLinks24
 
                 string tabjePattern = @",(""positions"":(.*?)),""lang";
                 string tabjeJson = "{" + Regex.Match(htmlDoc, tabjePattern, RegexOptions.Singleline).Groups[1].Value + "}";
-                DetailAnswers test = DetailAnswers.FromJson(tabjeJson);
+                DetailConfing test = DetailConfigJson.FromJson(tabjeJson);
 
                 string imagePattern = @"""imageViewerParamsUrl"":""(.*?)""";
                 string imageJsonUrl = "https://www.partslink24.com/vwag/audi_parts/" + Regex.Match(htmlDoc, imagePattern).Groups[1].Value.Replace("\\u0026", "&");
@@ -278,8 +278,6 @@ namespace ConsoleParsingPartsLinks24
             public Part(GroupConfig config, string url) : base(config, url) { }
             public override List<GroupConfig> GetAll()
             {
-                //https://www.partslink24.com/vwag/audi_parts/group.action?catalogMarket=RDW&episType=152&lang=ru&localMarketOnly=true&ordinalNumber=2&partDetailsMarket=RDW&startup=false&mode=K00U0DEXX&upds=1381&familyKey=91155&modelYear=1998&maingroup=1&restriction1=92362
-                //https://www.partslink24.com/vwag/audi_parts/group.action?catalogMarket=RDW&episType=152&lang=ru&localMarketOnly=true&ordinalNumber=2&partDetailsMarket=RDW&startup=false&mode=K00U0RUXX&upds=1381&familyKey=91155&modelYear=&maingroup=1998&restriction1=92362
                 var parts = Doc.GetElementbyId("nav-groupIllustration-table").SelectNodes("tbody/tr");
                 foreach (var part in parts)
                 {
@@ -308,37 +306,47 @@ namespace ConsoleParsingPartsLinks24
             {
                 string domain = "https://www.partslink24.com/";
                 string path = "https://www.partslink24.com/vwag/audi_parts";
-                var html = Site.LoadDocument(URL).DocumentNode.InnerHtml;
+                string html = Site.LoadDocument(URL).DocumentNode.InnerHtml;
                 //string ImageSetting = "&rnd=2771&request=GetImage&format=image%2Fpng&bbox=0%2C0%2C1248%2C1413&width=500&height=302&scalefac=1&ticket=";
-                string tabjePattern = @",(""positions"":(.*?)),""lang";
-                string tabjeJson = "{" + Regex.Match(html, tabjePattern, RegexOptions.Singleline).Groups[1].Value + "}";
-                DetailAnswers answers = DetailAnswers.FromJson(tabjeJson);
 
-                foreach(var ansver in answers)
-                {
-                    DetailConfing newDetailConfing = new DetailConfing
-                    {
-                        Image = Site.LoadImage(MakeImageUrl(), @"C:\Users\Proger2\Desktop\"),
-                    };
+                DetailConfing newDetailConfig = DetailConfigJson.FromJson(getTableJson());
 
-                    Values.Add(newDetailConfing);
-                }
+                newDetailConfig.ImageInfo = loadImageInfo();
+                newDetailConfig.GroupConfig = ParentConfig;
+                Values.Add(newDetailConfig);
 
                 return Values;
 
-                string MakeImageUrl()
+                ImageInfo loadImageInfo()
                 {
-                    string imagePattern = @"""imageViewerParamsUrl"":""(.*?)""";
-                    string imageJsonUrl = path + "/" + Regex.Match(html, imagePattern).Groups[1].Value.Replace("\\u0026", "&");
-                    ImageParam imageParam = ImageParam.FromJson(Site.LoadJsonString(imageJsonUrl));
+                    ImageParam imageParam = ImageParam.FromJson(getImageParamJson());
+                    ImageInfo imageInfo = ImageInfo.FromJson(getImageInfoJson());
+                    imageInfo.ImageUrl = MakeImageUrl();
+                    return imageInfo;
 
-                    string jsonImageInfoUrl = domain + imageParam.Pathparams.Url + "&cv=1&request=GetImageInfo&ticket=" + imageParam.Pathparams.Ticket;
-                    ImageInfo imageInfo = ImageInfo.FromJson(Site.LoadJsonString(jsonImageInfoUrl));
+                    string getImageParamJson()
+                    {
+                        string imagePattern = @"""imageViewerParamsUrl"":""(.*?)""";
+                        string imageJsonUrl = path + "/" + Regex.Match(html, imagePattern).Groups[1].Value.Replace("\\u0026", "&");
+                        return Site.LoadJsonString(imageJsonUrl);
+                    }
+                    string getImageInfoJson()
+                    {
+                        string jsonImageInfoUrl = domain + imageParam.Pathparams.Url + "&cv=1&request=GetImageInfo&ticket=" + imageParam.Pathparams.Ticket;
+                        return Site.LoadJsonString(jsonImageInfoUrl);
+                    }
+                    string MakeImageUrl()
+                    {
+                        string ImageSetting = string.Format(@"&rnd=2771&request=GetImage&format={0}&cv=1&bbox=0%2C0%2C1248%2C1413&width={1}&height={2}&scalefac=1&ticket=",
+                            imageInfo.ImageFormat, imageInfo.ImageWidth, imageInfo.ImageHeight);
 
-                    string ImageSetting = string.Format(@"&rnd=2771&request=GetImage&format={0}&cv=1&bbox=0%2C0%2C1248%2C1413&width={1}&height={2}&scalefac=1&ticket=",
-                        imageInfo.ImageFormat, imageInfo.ImageWidth, imageInfo.ImageHeight);
-
-                    return domain + imageParam.Pathparams.Url + ImageSetting + imageParam.Pathparams.Ticket.Trim();
+                        return domain + imageParam.Pathparams.Url + ImageSetting + imageParam.Pathparams.Ticket.Trim();
+                    }
+                }
+                string getTableJson()
+                {
+                    string tabjePattern = @",(""positions"":(.*?)),""lang";
+                    return "{" + Regex.Match(html, tabjePattern, RegexOptions.Singleline).Groups[1].Value + "}";
                 }
             }
         }

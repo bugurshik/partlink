@@ -1,10 +1,6 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text.RegularExpressions;
 
 namespace ParsingLib
 {
@@ -38,50 +34,7 @@ namespace ParsingLib
             Json = Site.LoadJsonString(URL);
         }
     }
-    
 
-    public class Content
-    {
-        public string Caption { get; set; }
-        public string JsonUrl { get; set; }
-        public string Url { get; set; }
-    }
-
-
-    public class Site
-    {
-        public static HtmlDocument LoadDocument(string url)
-        {
-            var web = new HtmlWeb();
-            return web.Load(url);
-        }
-        public static string LoadJsonString(string url)
-        {
-            WebResponse response = WebRequest.Create(url).GetResponse();
-            string json = "";
-            using (Stream stream = response.GetResponseStream())
-            {
-                using StreamReader reader = new StreamReader(stream);
-                json = reader.ReadToEnd();
-            }
-            response.Close();
-            return json;
-        }
-        public static string LoadImage(string href, string foldetPath)
-        {
-            string path;
-            using (WebClient client = new WebClient())
-            {
-                path = string.Format(@"{0}{1}.png", foldetPath, Guid.NewGuid());
-                client.DownloadFile(new Uri(href), path);
-            }
-            return path;
-        }
-        public static string GetUriPath(string url)
-        {
-            return Regex.Match(url, @"^(.*)\/").Value;
-        }
-    }
     public class Formatter
     {
         public static int? ToNullableInt(string s)

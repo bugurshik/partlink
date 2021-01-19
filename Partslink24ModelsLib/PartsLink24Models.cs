@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Partslink24Models
 {
@@ -40,14 +40,110 @@ namespace Partslink24Models
     {
         [JsonIgnore]
         public int Id { get; set; }
-        public string Image { get; set; }
-        public string Position { get; set; }
-        public string Number { get; set; }
-        public string Name { get; set; }
-        public string Notice { get; set; }
-        public int? Count { get; set; }
-        public string Input { get; set; }
-        // relationship
+        public string ImageUrl { get; set; }
+        [JsonProperty("positions")]
+        public List<Detail> Details { get; set; } = new List<Detail>();
+        [JsonProperty("hotspots")]
+        public ImageInfo ImageInfo { get; set; } = new ImageInfo();
         public GroupConfig GroupConfig { get; set; } = new GroupConfig();
+
+    }
+    public class Detail
+    {
+        [JsonProperty("quantity")]
+        public List<int?> Quantity { get; set; }
+
+        [JsonProperty("originalPartNumber")]
+        public List<string> OriginalPartNumber { get; set; }
+
+        [JsonProperty("link")]
+        public string Link { get; set; }
+
+        [JsonProperty("description")]
+        public List<string> Description { get; set; }
+
+        [JsonProperty("remark")]
+        public List<string> Remark { get; set; }
+
+        [JsonProperty("hotspotIds")]
+        public List<int> HotspotIds { get; set; }
+
+        [JsonProperty("vehicleDataAvailable")]
+        public bool VehicleDataAvailable { get; set; }
+
+        [JsonProperty("positionId")]
+        public int PositionId { get; set; }
+
+        [JsonProperty("expandedPartNumber")]
+        public string ExpandedPartNumber { get; set; }
+
+        [JsonProperty("modelInfo")]
+        public List<string> ModelInfo { get; set; }
+
+        [JsonProperty("header")]
+        public bool Header { get; set; }
+
+        [JsonProperty("partNumber")]
+        public string PartNumber { get; set; }
+
+        [JsonProperty("position")]
+        public string PositionStr { get; set; }
+
+        [JsonProperty("idx")]
+        public int Idx { get; set; }
+
+        [JsonProperty("fiInvalid")]
+        public bool FiInvalid { get; set; }
+
+        [JsonProperty("infoButtonAvailable")]
+        public bool InfoButtonAvailable { get; set; }
+
+        [JsonProperty("theOneForHotspot")]
+        public bool TheOneForHotspot { get; set; }
+
+        [JsonProperty("deploymentTime")]
+        public string DeploymentTime { get; set; }
+    }
+    public partial class ImageInfo
+    {
+        public string ImageUrl { get; set; }
+        [JsonProperty("imageWidth")]
+        public int ImageWidth { get; set; }
+
+        [JsonProperty("imageHeight")]
+        public int ImageHeight { get; set; }
+
+        [JsonProperty("imageFormat")]
+        public string ImageFormat { get; set; }
+
+        [JsonProperty("maxScaleFactor")]
+        public int MaxScaleFactor { get; set; }
+
+        [JsonProperty("hotspots")]
+        public List<HotSpot> HotSpots { get; set; }
+        public static ImageInfo FromJson(string json) => JsonConvert.DeserializeObject<ImageInfo>(json);
+    }
+    public class HotSpot
+    {
+        [JsonProperty("hsKey")]
+        public string HsKey { get; set; }
+
+        [JsonProperty("hsPartNo")]
+        public string HsPartNo { get; set; }
+
+        [JsonProperty("hsGroup")]
+        public List<object> HsGroup { get; set; }
+
+        [JsonProperty("hsX")]
+        public int HsX { get; set; }
+
+        [JsonProperty("hsY")]
+        public int HsY { get; set; }
+
+        [JsonProperty("hsWidth")]
+        public int HsWidth { get; set; }
+
+        [JsonProperty("hsHeight")]
+        public int HsHeight { get; set; }
     }
 }
