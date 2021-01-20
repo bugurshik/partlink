@@ -10,30 +10,50 @@ namespace ParsingLib
     {
         public static HtmlDocument LoadDocument(string url)
         {
-            var web = new HtmlWeb();
-            return web.Load(url);
+            try
+            {
+                var web = new HtmlWeb();
+                return web.Load(url);
+            }
+            catch
+            {
+                return null;
+            }
         }
         public static string LoadJsonString(string url)
         {
-            WebResponse response = WebRequest.Create(url).GetResponse();
-            string json = "";
-            using (Stream stream = response.GetResponseStream())
+            try
             {
-                using StreamReader reader = new StreamReader(stream);
-                json = reader.ReadToEnd();
+                string json;
+                WebResponse response = WebRequest.Create(url).GetResponse();
+                using (Stream stream = response.GetResponseStream())
+                {
+                    json = new StreamReader(stream).ReadToEnd();
+                }
+                response.Close();
+                return json;
             }
-            response.Close();
-            return json;
+            catch
+            {
+                return null;
+            }
         }
         public static string LoadImage(string href, string foldetPath)
         {
-            string path;
-            using (WebClient client = new WebClient())
+            try
             {
-                path = string.Format(@"{0}{1}.png", foldetPath, Guid.NewGuid());
-                client.DownloadFile(new Uri(href), path);
+                string path;
+                using (WebClient client = new WebClient())
+                {
+                    path = string.Format(@"{0}{1}.png", foldetPath, Guid.NewGuid());
+                    client.DownloadFile(new Uri(href), path);
+                }
+                return path;
             }
-            return path;
+            catch
+            {
+                return null;
+            }
         }
         public static string GetUriPath(string url)
         {

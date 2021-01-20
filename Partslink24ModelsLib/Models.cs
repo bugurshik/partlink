@@ -7,7 +7,6 @@ namespace PartslinkModels
     {
         [JsonIgnore]
         public int Id { get; set; }
-
         public string Model { get; set; }
         public string FamilyKey { get; set; } // model key
         public string Year { get; set; } // year key
@@ -17,11 +16,6 @@ namespace PartslinkModels
         public string Restrict3 { get; set; }
         // relationship
         //public GroupConfig GroupConfig { get; set; } = new GroupConfig();
-    }
-    public class Model
-    {
-        public string FamilyKey { get; set; }
-        public string ModelName { get; set; }
     }
 
     public class GroupConfig
@@ -38,7 +32,6 @@ namespace PartslinkModels
         public string Inputs { get; set; }
         // relationship
         public ModelConfig ModelConfig { get; set; } = new ModelConfig();
-        //public DetailConfing DetailPacks { get; set; } = new DetailConfing();
     }
 
     public partial class DetailConfing

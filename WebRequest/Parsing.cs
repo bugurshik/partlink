@@ -3,52 +3,45 @@ using System.Collections.Generic;
 
 namespace ParsingLib
 {
-    public abstract class Parsing<T, U> : IParsing<U>
+    public abstract class Parsing
     {
         public string URL { get; }
-        public T ParentConfig;
-        public List<U> Values { get; set; } = new List<U>();
-        public Parsing(T config, string url)
+        public Parsing(string url)
         {
             URL = url;
-            ParentConfig = config;
         }
-        public abstract List<U> GetAllModels();
     }
-    public abstract class ParsingDoc<T, U> : Parsing<T, U>
+    public abstract class ParsingDoc : Parsing
     {
         public HtmlDocument Doc;
-        public ParsingDoc(T config, string url) : base(config, url)
+        public ParsingDoc(string url) : base(url)
         {
             Doc = Site.LoadDocument(URL);
         }
     }
-    public abstract class ParsingJson<T, U> : Parsing<T, U>
+    public abstract class ParsingJson : Parsing
     {
         public string Json;
-        public ParsingJson(T config, string url) : base(config, url)
+        public ParsingJson(string url) : base(url)
         {
             Json = Site.LoadJsonString(URL);
         }
     }
-    public class Formatter
+    public class Answer
     {
-        public static int? ToNullableInt(string s)
-        {
-            if (int.TryParse(s, out int i)) return i;
-            return null;
-        }
+        public string Value { get; set; }
+        public string Key { get; set; }
     }
 
-    public class ParsingResponce<U>
+    public class ParsingResponce
     {
-        public IParsing<U> pars;
+        public IParsing pars;
         public bool Success { get; set; } = false;
         public string Message { get; set; }
     }
 
-    public interface IParsing<U>
+    public interface IParsing
     {
-        public List<U> GetAllModels();
+        public List<Answer> GetAllModels();
     }
 }

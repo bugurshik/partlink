@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using WebApiPartsLink24.Services.AudiServices;
 
 namespace WebApiPartsLink24
 {
@@ -10,6 +11,7 @@ namespace WebApiPartsLink24
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<IVehicleService, AudiService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
